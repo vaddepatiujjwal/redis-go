@@ -22,7 +22,6 @@ func main() {
 
 	for {
 		fmt.Println("started serving: ")
-
 		conn, err := l.Accept()
 
 		if err != nil {
@@ -30,10 +29,8 @@ func main() {
 			os.Exit(1)
 		}
 
-		conn.Write([]byte("+PONG\r\n"))
-
-		fmt.Println("ended serving")
-
+		//conn.Write([]byte("+PONG\r\n"))
+		//fmt.Println("ended serving")
 		handleClient(conn)
 	}
 }
