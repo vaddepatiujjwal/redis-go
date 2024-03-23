@@ -34,23 +34,25 @@ func main() {
 
 		fmt.Println("ended serving")
 
-		// handleClient(conn)
+		handleClient(conn)
 	}
 }
 
-// func handleClient(conn net.Conn) {
-// 	// defer conn.Close()
+func handleClient(conn net.Conn) {
+	defer conn.Close()
 
-// 	// buffer := make([]byte, 1024)
-// 	// _, err := conn.Read(buffer)
+	for {
+		buffer := make([]byte, 1024)
+		_, err := conn.Read(buffer)
 
-// 	// input := string(buffer[:n])
+		// input := string(buffer[:n])
 
-// 	// fmt.Println("incoming command: ", input)
+		fmt.Println("incoming command: ping")
 
-// 	// if err != nil {
-// 	// 	fmt.Println("Error reading command: ", err.Error())
-// 	// }
+		if err != nil {
+			fmt.Println("Error reading command: ", err.Error())
+		}
 
-// 	conn.Write([]byte("+PONG\r\n"))
-// }
+		conn.Write([]byte("+PONG\r\n"))
+	}
+}
