@@ -35,16 +35,16 @@ func main() {
 func handleClient(conn net.Conn) {
 	defer conn.Close()
 
-	buffer := make([]byte, 1024)
-	_, err := conn.Read(buffer)
+	// buffer := make([]byte, 1024)
+	// _, err := conn.Read(buffer)
 
-	//input := string(buffer[:n])
+	// input := string(buffer[:n])
 
 	// fmt.Println("incoming command: ", input)
 
-	if err != nil {
-		fmt.Println("Error reading command: ", err.Error())
-	}
+	// if err != nil {
+	// 	fmt.Println("Error reading command: ", err.Error())
+	// }
 
 	conn.Write([]byte("+PONG\r\n"))
 }
