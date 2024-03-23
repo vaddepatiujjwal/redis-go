@@ -21,6 +21,8 @@ func main() {
 	defer l.Close()
 
 	for {
+		fmt.Println("started serving: ")
+
 		conn, err := l.Accept()
 
 		if err != nil {
@@ -28,23 +30,27 @@ func main() {
 			os.Exit(1)
 		}
 
-		handleClient(conn)
+		conn.Write([]byte("+PONG\r\n"))
+
+		fmt.Println("ended serving")
+
+		// handleClient(conn)
 	}
 }
 
-func handleClient(conn net.Conn) {
-	// defer conn.Close()
+// func handleClient(conn net.Conn) {
+// 	// defer conn.Close()
 
-	// buffer := make([]byte, 1024)
-	// _, err := conn.Read(buffer)
+// 	// buffer := make([]byte, 1024)
+// 	// _, err := conn.Read(buffer)
 
-	// input := string(buffer[:n])
+// 	// input := string(buffer[:n])
 
-	// fmt.Println("incoming command: ", input)
+// 	// fmt.Println("incoming command: ", input)
 
-	// if err != nil {
-	// 	fmt.Println("Error reading command: ", err.Error())
-	// }
+// 	// if err != nil {
+// 	// 	fmt.Println("Error reading command: ", err.Error())
+// 	// }
 
-	conn.Write([]byte("+PONG\r\n"))
-}
+// 	conn.Write([]byte("+PONG\r\n"))
+// }
