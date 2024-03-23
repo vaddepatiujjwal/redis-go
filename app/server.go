@@ -33,11 +33,9 @@ func handleClient(conn net.Conn) {
 	defer conn.Close()
 
 	for {
-		buffer := make([]byte, 1024)
-		_, err := conn.Read(buffer)
+		_, err := conn.Read(make([]byte, 1024))
 		// input := string(buffer[:n])
-
-		fmt.Println("incoming command: ping")
+		//fmt.Println("incoming command: ping")
 
 		if err != nil {
 			fmt.Println("Error reading command: ", err.Error())
