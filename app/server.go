@@ -78,5 +78,5 @@ func parseCommand(input string) ([]string, error) {
 }
 
 func encodeRedisString(input string) string {
-	return "$" + strconv.Itoa(len(input)) + "/r/n" + input + "/r/n"
+	return "$" + strconv.Itoa(len(input)) + "\r\n" + input + "\r\n"
 }
