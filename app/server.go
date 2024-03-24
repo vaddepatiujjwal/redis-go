@@ -4,11 +4,12 @@ import (
 	"fmt"
 	"net"
 	"os"
+	"strconv"
+	"strings"
 )
 
 func main() {
-
-	// start the redis server
+	// starts the redis server on it's default port
 	l, err := net.Listen("tcp", "0.0.0.0:6379")
 	if err != nil {
 		fmt.Println("Failed to bind to port 6379")
@@ -18,6 +19,7 @@ func main() {
 	defer l.Close()
 
 	for {
+		// blocking call, this line waits untill we have a redis client makes a call
 		conn, err := l.Accept()
 
 		if err != nil {
@@ -25,6 +27,7 @@ func main() {
 			os.Exit(1)
 		}
 
+		// Each client gets it's own go routine to serve concurrent redis client's
 		go handleClient(conn)
 	}
 }
@@ -32,17 +35,48 @@ func main() {
 func handleClient(conn net.Conn) {
 	defer conn.Close()
 
+	// same client can make n numbers of command's
 	for {
 		buffer := make([]byte, 1024)
 		n, err := conn.Read(buffer)
 		input := string(buffer[:n])
+		var response string
 
-		fmt.Printf("incoming command: %s", input)
+		if len(input) > 0 {
+			//fmt.Printf("incoming command: %s\n", input)
 
-		if err != nil {
-			fmt.Println("Error reading command: ", err.Error())
+			// extract command sent by client (e.g. Ping, Echo, Set or Get)
+			tokens, _ := parseCommand(input)
+
+			// handle redis commands
+			switch strings.ToLower(tokens[0]) {
+			case "echo":
+				response = encodeRedisString(tokens[1])
+			case "ping":
+				response = "+PONG\r\n"
+			}
+
+			if err != nil {
+				fmt.Println("Error reading command: ", err.Error())
+			}
+
+			// write response to client,
+			conn.Write([]byte(response))
 		}
-
-		conn.Write([]byte("+PONG\r\n"))
 	}
+}
+
+func parseCommand(input string) ([]string, error) {
+	inputStrings := strings.Split(input, "\r\n")
+	var resultStrings []string
+	for idx, value := range inputStrings[1:] {
+		if (idx+1)%2 == 0 {
+			resultStrings = append(resultStrings, value)
+		}
+	}
+	return resultStrings, nil
+}
+
+func encodeRedisString(input string) string {
+	return "$" + strconv.Itoa(len(input)) + "/r/n" + input + "/r/n"
 }
