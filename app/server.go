@@ -47,7 +47,6 @@ func handleClient(conn net.Conn) {
 
 		if len(input) > 0 {
 			//fmt.Printf("incoming command: %s\n", input)
-
 			// extract command sent by client (e.g. Ping, Echo, Set or Get)
 			tokens, _ := parseCommand(input)
 
@@ -59,7 +58,10 @@ func handleClient(conn net.Conn) {
 				result[tokens[1]] = encodeRedisString(tokens[2])
 				response = "+OK\r\n"
 			case "get":
-				response = result[tokens[1]]
+				response = "$-1\r\n"
+				if _, ok := result[tokens[1]]; ok {
+					response = result[tokens[1]]
+				}
 			case "ping":
 				response = "+PONG\r\n"
 			}
