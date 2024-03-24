@@ -20,7 +20,8 @@ func main() {
 
 	for i := 0; i < 1; i++ {
 		fmt.Printf("made a call, %d\n", i)
-		conn.Write([]byte("*2\r\n$4\r\necho\r\n$5\r\nheyrr\r\n"))
+		//conn.Write([]byte("*3\r\n$3\r\nset\r\n$3\r\nfoo\r\n$3\r\nbar\r\n"))
+		conn.Write([]byte("*2\r\n$3\r\nget\r\n$3\r\nfoo\r\n"))
 		time.Sleep(time.Second * 1)
 	}
 }

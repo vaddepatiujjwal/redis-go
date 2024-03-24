@@ -8,7 +8,10 @@ import (
 	"strings"
 )
 
+var result = make(map[string]string)
+
 func main() {
+
 	// starts the redis server on it's default port
 	l, err := net.Listen("tcp", "0.0.0.0:6379")
 	if err != nil {
@@ -52,6 +55,11 @@ func handleClient(conn net.Conn) {
 			switch strings.ToLower(tokens[0]) {
 			case "echo":
 				response = encodeRedisString(tokens[1])
+			case "set":
+				result[tokens[1]] = encodeRedisString(tokens[2])
+				response = "+OK\r\n"
+			case "get":
+				response = result[tokens[1]]
 			case "ping":
 				response = "+PONG\r\n"
 			}
