@@ -60,7 +60,7 @@ func handleClient(conn net.Conn) {
 				response = encodeRedisString(tokens[1])
 			case "set":
 				result[tokens[1]] = encodeRedisString(tokens[2])
-				result[tokens[3]] = tokens[4]
+				// result[tokens[3]] = tokens[4]
 				response = "+OK\r\n"
 			case "get":
 				response = "$-1\r\n"
