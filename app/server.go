@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"net"
 	"os"
-	"strconv"
 	"strings"
 )
 
@@ -41,7 +40,12 @@ func handleClient(conn net.Conn) {
 	// same client can make n numbers of command's
 	for {
 		buffer := make([]byte, 1024)
+
 		n, err := conn.Read(buffer)
+		if err != nil {
+			fmt.Println("Error reading command: ", err.Error())
+		}
+
 		input := string(buffer[:n])
 		var response string
 
@@ -56,9 +60,11 @@ func handleClient(conn net.Conn) {
 				response = encodeRedisString(tokens[1])
 			case "set":
 				result[tokens[1]] = encodeRedisString(tokens[2])
+				result[tokens[3]] = tokens[4]
 				response = "+OK\r\n"
 			case "get":
 				response = "$-1\r\n"
+
 				if _, ok := result[tokens[1]]; ok {
 					response = result[tokens[1]]
 				}
@@ -66,27 +72,8 @@ func handleClient(conn net.Conn) {
 				response = "+PONG\r\n"
 			}
 
-			if err != nil {
-				fmt.Println("Error reading command: ", err.Error())
-			}
-
 			// write response to client,
 			conn.Write([]byte(response))
 		}
 	}
-}
-
-func parseCommand(input string) ([]string, error) {
-	inputStrings := strings.Split(input, "\r\n")
-	var resultStrings []string
-	for idx, value := range inputStrings[1:] {
-		if (idx+1)%2 == 0 {
-			resultStrings = append(resultStrings, value)
-		}
-	}
-	return resultStrings, nil
-}
-
-func encodeRedisString(input string) string {
-	return "$" + strconv.Itoa(len(input)) + "\r\n" + input + "\r\n"
 }
